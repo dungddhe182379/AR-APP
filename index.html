@@ -219,10 +219,17 @@
             
             resultDiv.style.display = 'block';
             
+            const resultExplanation = resultDiv.querySelector('.result-explanation');
+            
             if (userAnswer === correctAnswer) {
                 resultDiv.className = 'vsk-quiz-result correct';
                 resultIcon.textContent = '✓';
                 resultMessage.textContent = 'Chính xác!';
+                
+                // Show explanation for correct answer
+                if (resultExplanation) {
+                    resultExplanation.style.display = 'block';
+                }
                 
                 // Disable all choices
                 quizElement.querySelectorAll('.vsk-quiz-choice').forEach(choice => {
@@ -239,6 +246,11 @@
                 resultDiv.className = 'vsk-quiz-result incorrect';
                 resultIcon.textContent = '✗';
                 resultMessage.textContent = 'Chưa chính xác. Hãy thử lại!';
+                
+                // Hide explanation for incorrect answer
+                if (resultExplanation) {
+                    resultExplanation.style.display = 'none';
+                }
             }
         }
 
