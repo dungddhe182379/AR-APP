@@ -294,8 +294,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } else if (cardTitle === 'Quyền lực được kiểm soát như thế nào?') {
                 // Card 2 content - Báo chí Pháp quote without image
-                if (videoTitle) videoTitle.textContent = 'Nhà nước pháp quyền';
-                if (youtubeFrame) youtubeFrame.src = 'https://www.youtube.com/embed/RR-ZivsVTsg';
+                if (videoTitle) videoTitle.textContent = 'PHIM TÀI LIỆU: PHÁP QUYỀN NHÂN NGHĨA HỒ CHÍ MINH';
+                if (youtubeFrame) youtubeFrame.src = 'https://www.youtube.com/embed/7XUUmDQ3N3Q';
                 
                 if (quizContainer) {
                     quizContainer.innerHTML = `
@@ -348,10 +348,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="final-quote-content">
                                 <div class="final-quote-marks opening">❝</div>
                                 <blockquote class="final-quote-text">
-                                    Điện Biên Phủ là một Verdun của người da vàng đánh bại người da trắng
+                                    Lấy Dân Làm Gốc, Nhân Nghĩa Làm Nền, Pháp Luật Làm Trọng
                                 </blockquote>
                                 <div class="final-quote-marks closing">❞</div>
-                                <cite class="final-quote-author">BÁO CHÍ PHÁP</cite>
+                                <cite class="final-quote-author">.</cite>
                             </div>
                         </div>
                     `;
