@@ -1400,6 +1400,13 @@ body {
         height: 200px;
     }
 
+    /* Điều chỉnh ngôi sao cho màn hình 480px */
+    .quote-block .quote-image-container::after {
+        font-size: 250px;
+        top: -60%;
+        right: -15%;
+    }
+
     .quote-text-box p {
         font-size: 14px;
     }
