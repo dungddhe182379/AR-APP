@@ -99,6 +99,44 @@ body {
     gap: 40px;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ar-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #7E0809 0%, #a31012 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 4px 15px rgba(126, 8, 9, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.ar-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(126, 8, 9, 0.4);
+    background: linear-gradient(135deg, #a31012 0%, #7E0809 100%);
+}
+
+.ar-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(126, 8, 9, 0.3);
+}
+
+.ar-button svg {
+    width: 20px;
+    height: 20px;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -577,6 +615,25 @@ body {
     
     .header {
         flex-wrap: wrap;
+    }
+    
+    .header-right {
+        order: -1;
+        margin-right: auto;
+    }
+    
+    .ar-button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .ar-button svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .ar-button span {
+        display: none;
     }
     
     .nav-menu {
