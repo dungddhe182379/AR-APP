@@ -8,212 +8,19 @@
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Be+Vietnam:300,400,500,600,700&display=swap" rel="stylesheet" />
     <link href="assets/css/periods.css" rel="stylesheet" />
+    <link href="assets/css/about.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link rel="shortcut icon" type="image/png" href="assets/images/logo.png">
     <title>Giới thiệu nhóm - Sản phẩm sáng tạo chủ đề 5</title>
-    <style>
-        .team-page {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #7E0809 0%, #C41E3A 100%);
-            padding: 80px 20px 60px;
-        }
-
-        .team-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .page-title {
-            color: #fff;
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .page-subtitle {
-            color: #f0f0f0;
-            font-size: 20px;
-            line-height: 1.6;
-        }
-
-        .teacher-section {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 50px;
-            margin-bottom: 50px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        }
-
-        .section-title {
-            text-align: center;
-            color: #7E0809;
-            font-size: 32px;
-            margin-bottom: 40px;
-            font-weight: 600;
-        }
-
-        .teacher-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .teacher-avatar {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #7E0809, #C41E3A);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(126,8,9,0.4);
-        }
-
-        .teacher-avatar span {
-            color: white;
-            font-size: 56px;
-            font-weight: 700;
-        }
-
-        .teacher-details h3 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .teacher-code {
-            color: #7E0809;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 8px 0;
-        }
-
-        .teacher-role {
-            color: #666;
-            font-size: 18px;
-            margin-top: 8px;
-        }
-
-        .members-section {
-            background: rgba(255,255,255,0.95);
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        }
-
-        .members-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 35px;
-            margin-top: 40px;
-        }
-
-        .member-card {
-            background: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 2px solid #e0e0e0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .member-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            border-color: #7E0809;
-        }
-
-        .member-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        .member-avatar span {
-            color: white;
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        .member-name {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .member-id {
-            font-weight: 600;
-            margin: 8px 0;
-            font-size: 16px;
-        }
-
-        .member-role {
-            color: #666;
-            font-size: 15px;
-            margin-top: 8px;
-        }
-
-        .back-button {
-            display: inline-block;
-            margin-bottom: 30px;
-            padding: 12px 30px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .back-button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateX(-5px);
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="nav-left">
-                <h1 style="color: #7E0809; font-size: 24px; margin: 0; font-weight: 700;">Sản phẩm sáng tạo chủ đề 5</h1>
-                <nav>
-                    <ul class="nav-menu">
-                        <li><a href="index.html" class="nav-link">Trang chủ</a></li>
-                        <li><a href="about.html" class="nav-link active">Giới thiệu</a></li>
-                    </ul>
-                </nav>
-            </div>
-            <button class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Team Page Content -->
-    <div class="team-page">
-        <div class="team-container">
-            <a href="index.html" class="back-button">← Quay lại trang chủ</a>
+    <!-- Page Content Wrapper -->
+    <div class="page-content">
+        <!-- Team Page Content -->
+        <div class="team-page">
+            <div class="team-container">
+                <a href="index.html" class="back-button">← Quay lại trang chủ</a>
             
             <div class="page-header">
                 <h1 class="page-title">Giới thiệu nhóm</h1>
@@ -222,7 +29,7 @@
 
             <!-- Giáo viên hướng dẫn -->
             <div class="teacher-section">
-                <h2 class="section-title">Giáo viên hướng dẫn</h2>
+                <h2 class="section-title">Giảng viên môn tư tưởng Hồ Chí Minh</h2>
                 <div class="teacher-info">
                     <div class="teacher-avatar">
                         <span>HĐ</span>
@@ -230,7 +37,7 @@
                     <div class="teacher-details">
                         <h3>Đỗ Thị Thu Hà</h3>
                         <p class="teacher-code">HaDTT50</p>
-                        <p class="teacher-role">Giáo viên Giáo dục Công dân</p>
+                        <p class="teacher-role">Giáo viên hướng dẫn</p>
                     </div>
                 </div>
             </div>
@@ -245,59 +52,53 @@
                         <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A);">
                             <span>TV1</span>
                         </div>
-                        <h3 class="member-name">Thành viên 1</h3>
-                        <p class="member-id" style="color: #7E0809;">MSSV: 001</p>
-                        <p class="member-role">Vai trò: Nhóm trưởng</p>
+                        <h3 class="member-name">Đỗ Duy Dũng</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HE182379</p>
                     </div>
 
                     <!-- Thành viên 2 -->
                     <div class="member-card">
-                        <div class="member-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A);">
                             <span>TV2</span>
                         </div>
-                        <h3 class="member-name">Thành viên 2</h3>
-                        <p class="member-id" style="color: #f5576c;">MSSV: 002</p>
-                        <p class="member-role">Vai trò: Thiết kế</p>
+                        <h3 class="member-name">Trần Văn Tuấn</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HE186778</p>
                     </div>
 
                     <!-- Thành viên 3 -->
                     <div class="member-card">
-                        <div class="member-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A);">
                             <span>TV3</span>
                         </div>
-                        <h3 class="member-name">Thành viên 3</h3>
-                        <p class="member-id" style="color: #00f2fe;">MSSV: 003</p>
-                        <p class="member-role">Vai trò: Lập trình</p>
+                        <h3 class="member-name">Phạm Hoàng Dương</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HE186487</p>
                     </div>
 
                     <!-- Thành viên 4 -->
                     <div class="member-card">
-                        <div class="member-avatar" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A  );">
                             <span>TV4</span>
                         </div>
-                        <h3 class="member-name">Thành viên 4</h3>
-                        <p class="member-id" style="color: #38f9d7;">MSSV: 004</p>
-                        <p class="member-role">Vai trò: Nội dung</p>
+                        <h3 class="member-name">Đinh Anh Tuấn</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HE171145</p>
                     </div>
 
                     <!-- Thành viên 5 -->
                     <div class="member-card">
-                        <div class="member-avatar" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A);">
                             <span>TV5</span>
                         </div>
-                        <h3 class="member-name">Thành viên 5</h3>
-                        <p class="member-id" style="color: #fa709a;">MSSV: 005</p>
-                        <p class="member-role">Vai trò: AR Development</p>
+                        <h3 class="member-name">Nguyễn Phương Nam</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HE151156</p>
                     </div>
 
                     <!-- Thành viên 6 -->
                     <div class="member-card">
-                        <div class="member-avatar" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
+                        <div class="member-avatar" style="background: linear-gradient(135deg, #7E0809, #C41E3A);">
                             <span>TV6</span>
                         </div>
-                        <h3 class="member-name">Thành viên 6</h3>
-                        <p class="member-id" style="color: #ee0979;">MSSV: 006</p>
-                        <p class="member-role">Vai trò: Nghiên cứu</p>
+                        <h3 class="member-name">Nguyễn Đức Thái Vũ</h3>
+                        <p class="member-id" style="color: #7E0809;">MSSV: HS150581</p>
                     </div>
 
                 </div>
