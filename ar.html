@@ -47,6 +47,35 @@
       z-index: 1 !important;
     }
 
+    /* Hide all video controls */
+    video::-webkit-media-controls {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-enclosure {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-panel {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-play-button {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+    }
+
+    video::-moz-media-controls {
+      display: none !important;
+    }
+
+    video::--webkit-media-controls {
+      display: none !important;
+    }
+
     /* Ensure canvas is on top for AR content */
     #ar-container canvas {
       position: absolute !important;
@@ -308,6 +337,32 @@
         left: 10px;
         font-size: 0.8rem;
       }
+
+      /* Ensure video controls are hidden on mobile */
+      video::-webkit-media-controls {
+        display: none !important;
+        -webkit-appearance: none !important;
+      }
+
+      video::-webkit-media-controls-enclosure {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-panel {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-play-button {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-start-playback-button {
+        display: none !important;
+      }
+
+      video {
+        pointer-events: none !important;
+      }
     }
   </style>
 </head>
@@ -508,6 +563,8 @@
           video.preload = "metadata"; // Changed from "auto" to save bandwidth
           video.setAttribute("playsinline", "");
           video.setAttribute("webkit-playsinline", "");
+          video.setAttribute("controlsList", "nodownload nofullscreen noremoteplayback");
+          video.setAttribute("disablePictureInPicture", "");
           video.style.pointerEvents = "none";
           
           // Optimize video loading
