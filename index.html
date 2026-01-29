@@ -1,289 +1,759 @@
 <!DOCTYPE html>
-<html lang="vi">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Be+Vietnam+Pro:300,400,500,600,700&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Be+Vietnam:300,400,500,600,700&display=swap" rel="stylesheet" />
-    <link href="assets/css/periods.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="assets/images/logo.png">
-    <link rel="shortcut icon" type="image/png" href="assets/images/logo.png">
-    <title>Sản phẩm sáng tạo chủ đề 5</title>
+  <title>Việt Sử Ký</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Trải nghiệm lịch sử Việt Nam qua công nghệ AR">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="targets.mind" as="fetch" crossorigin>
+  <link rel="preload" href="Vid1.mp4" as="video" type="video/mp4">
+  
+  <!-- Load scripts with defer for better performance -->
+  <script defer src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.0/dist/mindar-image.prod.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.0/dist/mindar-image-three.prod.js"></script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    #ar-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* Ensure camera video is visible */
+    #ar-container video {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      z-index: 1 !important;
+    }
+
+    /* Hide all video controls */
+    video::-webkit-media-controls {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-enclosure {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-panel {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-play-button {
+      display: none !important;
+    }
+
+    video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+    }
+
+    video::-moz-media-controls {
+      display: none !important;
+    }
+
+    video::--webkit-media-controls {
+      display: none !important;
+    }
+
+    /* Ensure canvas is on top for AR content */
+    #ar-container canvas {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      z-index: 2 !important;
+      pointer-events: none;
+    }
+
+    /* Loading screen */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #ffd93d);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Overlay styles */
+    #overlay-hint,
+    #overlay-click {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      z-index: 999;
+      text-align: center;
+      display: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeInBounce 0.6s ease-out;
+    }
+
+    @keyframes fadeInBounce {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    #overlay-click {
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #overlay-click:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 12px 40px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Status indicator */
+    .status-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 998;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+      background: #ff6b6b;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.active {
+      background: #4ecdc4;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Control panel */
+    .control-panel {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 15px;
+      z-index: 997;
+      display: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-width: 200px;
+    }
+
+    .control-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 107, 107, 0.8);
+      transform: scale(1.1);
+    }
+
+    /* Toggle button for control panel */
+    .toggle-panel-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 998;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-panel-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin: 5px 0;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Performance monitor */
+    .perf-monitor {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      z-index: 996;
+      display: none;
+      font-family: monospace;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      #overlay-hint,
+      #overlay-click {
+        font-size: 1rem;
+        padding: 12px 20px;
+        max-width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .control-panel {
+        right: 10px;
+        top: 70px;
+      }
+      
+      .status-indicator {
+        bottom: 10px;
+        left: 10px;
+        font-size: 0.8rem;
+      }
+
+      /* Ensure video controls are hidden on mobile */
+      video::-webkit-media-controls {
+        display: none !important;
+        -webkit-appearance: none !important;
+      }
+
+      video::-webkit-media-controls-enclosure {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-panel {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-play-button {
+        display: none !important;
+      }
+
+      video::-webkit-media-controls-start-playback-button {
+        display: none !important;
+      }
+
+      video {
+        pointer-events: none !important;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="nav-left">
-                <h1 style="color: #7E0809; font-size: 24px; margin: 0; font-weight: 700;">Sản phẩm sáng tạo chủ đề 5</h1>
-                <nav>
-                    <ul class="nav-menu">
-                        <li><a href="index.html" class="nav-link active">Trang chủ</a></li>
-                        <li><a href="about.html" class="nav-link">Giới thiệu</a></li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="header-right">
-                <a href="ar.html" class="ar-button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>Trải nghiệm AR</span>
-                </a>
-            </div>
-            <button class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </header>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Đang tải Việt Sử Ký...</div>
+    <div class="loading-progress">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+  </div>
 
-    <!-- Page Content Wrapper -->
-    <div class="page-content">
-        <!-- Courses Section -->
-        <section class="courses-section">
-            <div class="hero-content">
-                <h1 class="hero-title">Lựa chọn 1 vấn đề</h1>
-            </div>
-
-            <!-- Slider Controls -->
-            <div class="slider-controls">
-                <button class="slider-btn prev-btn" id="prevBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
-                <button class="slider-btn next-btn" id="nextBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Slider Wrapper -->
-            <div class="slider-wrapper">
-                <div class="courses-container">
-                    <div class="course-card" data-course-link="">
-                        <div class="card-image">
-                            <img src="assets/images/card-1.jpg" alt="Quyền lực thuộc về ai?">
-                        </div>
-                        <div class="card-overlay"></div>
-                        <div class="card-content">
-                            <span class="period">TƯ TƯỞNG</span>
-                            <h3 class="title">Quyền lực thuộc về ai?</h3>
-                            <p class="duration">Tư tưởng Hồ Chí Minh về nhà nước của dân</p>
-                        </div>
-                    </div>
-
-                    <div class="course-card" data-course-link="">
-                        <div class="card-image">
-                            <img src="assets/images/card-2.jpg" alt="CƠ CHẾ PHÁP QUYỀN">
-                        </div>
-                        <div class="card-overlay"></div>
-                        <div class="card-content">
-                            <span class="period">CƠ CHẾ PHÁP QUYỀN</span>
-                            <h3 class="title">Quyền lực được kiểm soát như thế nào?</h3>
-                            <p class="duration">Khi tư tưởng trở thành thể chế</p>
-                        </div>
-                    </div>
-
-                    <div class="course-card" data-course-link="">
-                        <div class="card-image">
-                            <img src="assets/images/card-3.jpg" alt="THỰC TIỄN TINH GỌN BỘ MÁY">
-                        </div>
-                        <div class="card-overlay"></div>
-                        <div class="card-content">
-                            <span class="period">THỰC TIỄN TINH GỌN BỘ MÁY</span>
-                            <h3 class="title">Nhà nước phục vụ hay cản trở?</h3>
-                            <p class="duration">Tư tưởng trong đời sống thực tế</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <div id="ar-container">
+    <div id="overlay-hint">📷 Vui lòng hướng camera vào ảnh để khám phá</div>
+    <div id="overlay-click">🎬 Chạm để bắt đầu, Vui lòng bật loa to</div>
+    
+    <div class="status-indicator">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Đang khởi động camera...</span>
     </div>
 
-    <!-- Course Detail Section -->
-    <section class="course-detail-section" id="courseDetailSection" style="display: none;">
-        <div class="course-detail-container">
-            <!-- Only lesson content -->
-            <div class="lesson-content">
-                <!-- Video Title -->
-                <h2 class="video-title">Nhà nước của dân, do dân, vì dân</h2>
-                
-                <!-- YouTube Video Frame -->
-                <div class="youtube-frame-container">
-                    <iframe 
-                        width="100%" 
-                        height="400" 
-                        src="https://www.youtube.com/embed/Ni5ATRDusC4" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
+    <!-- Toggle button for control panel -->
+    <button class="toggle-panel-btn" id="toggle-panel-btn" onclick="toggleControlPanel()">⚙️</button>
 
-                <!-- Quiz placeholder -->
-                <div id="quiz-placeholder-content"></div>
+    <div class="control-panel" id="control-panel">
+      <div class="control-panel-header">
+        <span>Tùy chọn</span>
+        <button class="close-btn" onclick="closeControlPanel()">×</button>
+      </div>
+      <button class="control-btn" onclick="toggleDebug()">Debug Info</button>
+      <button class="control-btn" onclick="resetVideos()">Reset Videos</button>
+      <button class="control-btn" onclick="toggleSound()">Bật/Tắt âm thanh</button>
+    </div>
 
-                <!-- Quote Block: Ho Chi Minh -->
-                <div class="quote-block">
-                    <div class="quote-image-container">
-                        <img src="assets/images/v0_5009.png" alt="Chủ tịch Hồ Chí Minh">
-                    </div>
-                    <div class="quote-content-container">
-                        <div class="quote-text-box">
-                            <p>Nước ta là nước dân chủ, bao nhiêu lợi ích đều vì dân, bao nhiêu quyền hạn đều của dân.</p>
-                        </div>
-                        <h3 class="quote-section-title">— Hồ Chí Minh, 1949</h3>
-                    </div>
-                </div>
+    <div class="perf-monitor" id="perf-monitor" style="margin-right: 50px;">
+      FPS: <span id="fps">0</span>
+    </div>
+  </div>
 
-                <button class="start-lesson-btn" id="completionBtn" style="display: none;" onclick="window.location.href='course-complete.html'">Hoàn thành</button>
-            </div>
-        </div>
-    </section>
+  <script>
+    // Performance monitoring
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fps = 0;
 
-    <!-- Footer -->
-    <footer class="footer" style="background: rgba(0,0,0,0.2);">
-        <div class="container">
-            <p style="color: #fff;">&copy; 2026 Sản phẩm sáng tạo chủ đề 5. All rights reserved.</p>
-        </div>
-    </footer>
-    
-    <script src="../../assets/js/interactive-quiz.js"></script>
-    <script src="assets/js/periods.js"></script>
-    <script>
-        // Initialize quiz for periods page
-        document.addEventListener('DOMContentLoaded', function() {
-            const quizContainer = document.getElementById('quiz-placeholder-content');
-            if (quizContainer) {
-                const quizHTML = `
-                    <div class="vsk-interactive-quiz" id="vsk-quiz-state-concept">
-                        <div class="vsk-quiz-header">
-                            <h3 class="vsk-quiz-title">Quiz – Nhà nước của dân, do dân, vì dân</h3>
-                        </div>
-                        <div class="vsk-quiz-body">
-                            <div class="vsk-quiz-question">
-                                <p>Trong tư tưởng Hồ Chí Minh, đặc điểm nào thể hiện rõ nhất bản chất "Nhà nước của nhân dân"?</p>
-                            </div>
-                            <div class="vsk-quiz-choices">
-                                <label class="vsk-quiz-choice">
-                                    <input type="radio" name="quiz-state-concept" value="a">
-                                    <span class="vsk-choice-text">A. Nhà nước do nhân dân ủng hộ và đóng thuế để duy trì hoạt động.</span>
-                                </label>
-                                <label class="vsk-quiz-choice">
-                                    <input type="radio" name="quiz-state-concept" value="b">
-                                    <span class="vsk-choice-text">B. Tất cả mọi quyền lực trong Nhà nước và trong xã hội đều thuộc về nhân dân.</span>
-                                </label>
-                                <label class="vsk-quiz-choice">
-                                    <input type="radio" name="quiz-state-concept" value="c">
-                                    <span class="vsk-choice-text">C. Nhà nước chăm lo cho đời sống vật chất và tinh thần của nhân dân.</span>
-                                </label>
-                                <label class="vsk-quiz-choice">
-                                    <input type="radio" name="quiz-state-concept" value="d">
-                                    <span class="vsk-choice-text">D. Nhà nước do nhân dân tự giác đứng lên thành lập sau cách mạng.</span>
-                                </label>
-                            </div>
-                            <button class="vsk-quiz-submit" onclick="checkQuizAnswer()">
-                                <span class="vsk-quiz-submit-text">Kiểm tra</span>
-                            </button>
-                            <div class="vsk-quiz-result" style="display: none;">
-                                <div class="result-icon"></div>
-                                <div class="result-message"></div>
-                                <div class="result-explanation">
-                                    <strong>Giải thích:</strong> Đáp án B là cốt lõi. "Của dân" nghĩa là nhân dân là chủ thể tối cao của quyền lực, mọi cơ quan nhà nước chỉ là người nhận ủy quyền từ dân.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                quizContainer.innerHTML = quizHTML;
-            }
+    function updateFPS() {
+      frameCount++;
+      const currentTime = performance.now();
+      if (currentTime >= lastTime + 1000) {
+        fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+        document.getElementById('fps').textContent = fps;
+        frameCount = 0;
+        lastTime = currentTime;
+      }
+    }
+
+    // Loading management
+    let loadingProgress = 0;
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingScreen = document.getElementById('loading-screen');
+
+    function updateLoadingProgress(progress) {
+      loadingProgress = Math.min(100, loadingProgress + progress);
+      loadingBar.style.width = loadingProgress + '%';
+      
+      if (loadingProgress >= 100) {
+        setTimeout(() => {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+          }, 500);
+        }, 500);
+      }
+    }
+
+    // Utility functions
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Global variables
+    let isDebugMode = false;
+    let isSoundEnabled = true;
+    let isControlPanelVisible = false;
+
+    function toggleControlPanel() {
+      const panel = document.getElementById('control-panel');
+      const toggleBtn = document.getElementById('toggle-panel-btn');
+      
+      isControlPanelVisible = !isControlPanelVisible;
+      
+      if (isControlPanelVisible) {
+        panel.style.display = 'block';
+        toggleBtn.textContent = '×';
+        toggleBtn.style.background = 'rgba(255, 107, 107, 0.8)';
+      } else {
+        panel.style.display = 'none';
+        toggleBtn.textContent = '⚙️';
+        toggleBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+      }
+    }
+
+    function closeControlPanel() {
+      const panel = document.getElementById('control-panel');
+      const toggleBtn = document.getElementById('toggle-panel-btn');
+      
+      isControlPanelVisible = false;
+      panel.style.display = 'none';
+      toggleBtn.textContent = '⚙️';
+      toggleBtn.style.background = 'rgba(0, 0, 0, 0.7)';
+    }
+
+    function toggleDebug() {
+      isDebugMode = !isDebugMode;
+      document.getElementById('perf-monitor').style.display = isDebugMode ? 'block' : 'none';
+      updateStatus(isDebugMode ? 'Debug mode: Bật' : 'Debug mode: Tắt');
+    }
+
+    function resetVideos() {
+      sessionStorage.removeItem('vid1');
+      updateStatus('Đã reset video');
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      updateStatus(`Âm thanh: ${isSoundEnabled ? 'Bật' : 'Tắt'}`);
+      // This will be handled in the main AR code
+    }
+
+    // Status update function
+    function updateStatus(text, isActive = false) {
+      document.getElementById('status-text').textContent = text;
+      const dot = document.getElementById('status-dot');
+      dot.className = 'status-dot' + (isActive ? ' active' : '');
+    }
+
+    // Main AR application
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        updateLoadingProgress(10);
+        updateStatus("Đang khởi tạo AR...");
+
+        // Wait for MindAR to be fully loaded
+        while (!window.MINDAR || !window.MINDAR.IMAGE || !window.MINDAR.IMAGE.MindARThree) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Initialize MindAR with basic settings first
+        const mindarThree = new window.MINDAR.IMAGE.MindARThree({
+          container: document.querySelector("#ar-container"),
+          imageTargetSrc: "targets.mind"
         });
 
-        // Quiz check function
-        function checkQuizAnswer(quizName, correctAnswer) {
-            const quizElement = document.querySelector(`input[name="${quizName}"]:checked`)?.closest('.vsk-interactive-quiz');
-            if (!quizElement) return;
+        updateLoadingProgress(30);
 
-            const selectedInput = quizElement.querySelector(`input[name="${quizName}"]:checked`);
-            if (!selectedInput) {
-                alert('Vui lòng chọn một đáp án!');
-                return;
-            }
+        const { renderer, scene, camera } = mindarThree;
+        
+        // Optimize renderer settings
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.physicallyCorrectLights = false;
+        renderer.powerPreference = "high-performance";
 
-            const userAnswer = selectedInput.value;
-            const resultDiv = quizElement.querySelector('.vsk-quiz-result');
-            const resultIcon = resultDiv.querySelector('.result-icon');
-            const resultMessage = resultDiv.querySelector('.result-message');
-            
-            resultDiv.style.display = 'block';
-            
-            const resultExplanation = resultDiv.querySelector('.result-explanation');
-            
-            if (userAnswer === correctAnswer) {
-                resultDiv.className = 'vsk-quiz-result correct';
-                resultIcon.textContent = '✓';
-                resultMessage.textContent = 'Chính xác!';
-                
-                // Show explanation for correct answer
-                if (resultExplanation) {
-                    resultExplanation.style.display = 'block';
-                }
-                
-                // Disable all choices
-                quizElement.querySelectorAll('.vsk-quiz-choice').forEach(choice => {
-                    choice.style.pointerEvents = 'none';
-                    choice.style.opacity = '0.6';
-                });
-                
-                // Hide submit button
-                quizElement.querySelector('.vsk-quiz-submit').style.display = 'none';
-                
-                // Track completion
-                markQuizCompleted(quizName);
-            } else {
-                resultDiv.className = 'vsk-quiz-result incorrect';
-                resultIcon.textContent = '✗';
-                resultMessage.textContent = 'Chưa chính xác. Hãy thử lại!';
-                
-                // Hide explanation for incorrect answer
-                if (resultExplanation) {
-                    resultExplanation.style.display = 'none';
-                }
-            }
+        const anchor1 = mindarThree.addAnchor(0);
+
+        updateLoadingProgress(50);
+
+        const overlayHint = document.getElementById("overlay-hint");
+        const overlayClick = document.getElementById("overlay-click");
+
+        let userInteracted = false;
+        let anchor1Visible = false;
+        
+        // Optimized video position storage
+        const videoPositions = {
+          vid1: parseFloat(sessionStorage.getItem("vid1")) || 0
+        };
+
+        // Optimized video creation with lazy loading
+        const createVideo = (src, geometry) => {
+          const video = document.createElement("video");
+          video.src = src;
+          video.crossOrigin = "anonymous";
+          video.loop = true;
+          video.playsInline = true;
+          video.autoplay = false;
+          video.muted = true;
+          video.controls = false;
+          video.preload = "metadata"; // Changed from "auto" to save bandwidth
+          video.setAttribute("playsinline", "");
+          video.setAttribute("webkit-playsinline", "");
+          video.setAttribute("controlsList", "nodownload nofullscreen noremoteplayback");
+          video.setAttribute("disablePictureInPicture", "");
+          video.style.pointerEvents = "none";
+          
+          // Optimize video loading
+          video.addEventListener('loadedmetadata', () => {
+            updateLoadingProgress(10);
+          });
+
+          const texture = new THREE.VideoTexture(video);
+          texture.minFilter = THREE.LinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          texture.format = THREE.RGBFormat;
+          
+          const material = new THREE.MeshBasicMaterial({ 
+            map: texture,
+            transparent: false,
+            alphaTest: 0.1
+          });
+          
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.frustumCulled = true; // Enable frustum culling for performance
+          
+          return { video, mesh, texture };
+        };
+
+        const scale1 = 0.58;
+        
+        // Optimize geometry creation
+        const geometry1 = new THREE.PlaneGeometry(1.778 * scale1, 1 * scale1, 1, 1);
+        
+        const vid1 = createVideo("Vid1.mp4", geometry1);
+
+        anchor1.group.add(vid1.mesh);
+
+        updateLoadingProgress(70);
+
+        // Optimized user interaction handler
+        const handleUserInteraction = () => {
+          if (userInteracted) return;
+          
+          userInteracted = true;
+          overlayClick.style.display = "none";
+          updateStatus("Trải nghiệm đã sẵn sàng", true);
+          
+          if (isSoundEnabled) {
+            vid1.video.muted = false;
+          }
+          
+          if (anchor1Visible) vid1.video.play().catch(console.warn);
+          
+          document.body.removeEventListener("click", handleUserInteraction);
+          document.body.removeEventListener("touchstart", handleUserInteraction);
+        };
+
+        document.body.addEventListener("click", handleUserInteraction, { passive: true });
+        document.body.addEventListener("touchstart", handleUserInteraction, { passive: true });
+
+        // Optimized anchor event handlers
+        anchor1.onTargetFound = () => {
+          anchor1Visible = true;
+          vid1.video.currentTime = videoPositions.vid1 || 0;
+          updateStatus("Đã phát hiện mục tiêu 1", true);
+          
+          if (!userInteracted) {
+            overlayHint.style.display = "none";
+            overlayClick.style.display = "block";
+          } else {
+            vid1.video.play().catch(console.warn);
+            overlayHint.style.display = "none";
+          }
+        };
+
+        anchor1.onTargetLost = () => {
+          anchor1Visible = false;
+          overlayClick.style.display = "none";
+          overlayHint.style.display = "block";
+          updateStatus("Đang tìm kiếm mục tiêu...");
+          
+          videoPositions.vid1 = vid1.video.currentTime;
+          sessionStorage.setItem("vid1", videoPositions.vid1.toString());
+          vid1.video.pause();
+        };
+
+        // Optimized resize handler with debouncing
+        const adjustRendererSize = debounce(() => {
+          const container = document.querySelector("#ar-container");
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+          
+          renderer.setSize(width, height);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        }, 100);
+
+        window.addEventListener("resize", adjustRendererSize, { passive: true });
+
+        updateLoadingProgress(90);
+        updateStatus("Đang khởi động camera...");
+
+        // Request camera permissions first
+        try {
+          await navigator.mediaDevices.getUserMedia({ video: true });
+          updateStatus("Camera đã được cấp quyền");
+        } catch (err) {
+          updateStatus("Lỗi: Không thể truy cập camera");
+          throw new Error("Camera access denied");
         }
 
-        // Track quiz completion
-        const completedQuizzes = new Set();
+        await mindarThree.start();
+        
+        updateLoadingProgress(100);
+        updateStatus("Sẵn sàng! Hướng camera vào ảnh lịch sử");
 
-        function markQuizCompleted(quizName) {
-            completedQuizzes.add(quizName);
-            console.log('Completed quizzes:', completedQuizzes.size, '/', 3);
-            
-            // Check if all 3 quizzes are completed
-            if (completedQuizzes.size === 3) {
-                showCompletionButton();
-            }
-        }
+        // Ensure camera video is visible
+        setTimeout(() => {
+          const video = document.querySelector('video');
+          if (video) {
+            video.style.display = 'block';
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.zIndex = '1';
+          }
+        }, 1000);
 
-        function showCompletionButton() {
-            const completionBtn = document.getElementById('completionBtn');
-            if (completionBtn) {
-                completionBtn.style.display = 'block';
-                completionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    </script>
+        // Show control panel after a delay
+        // setTimeout(() => {
+        //   document.getElementById('control-panel').style.display = 'block';
+        // }, 3000);
+
+        // Show hint if no targets found
+        setTimeout(() => {
+          if (!anchor1Visible && !userInteracted) {
+            overlayHint.style.display = "block";
+          }
+        }, 1500);
+
+        adjustRendererSize();
+
+        // Optimized render loop with FPS monitoring
+        renderer.setAnimationLoop(() => {
+          renderer.render(scene, camera);
+          updateFPS();
+        });
+
+        // Handle sound toggle
+        window.toggleSound = () => {
+          isSoundEnabled = !isSoundEnabled;
+          vid1.video.muted = !isSoundEnabled;
+          updateStatus(`Âm thanh: ${isSoundEnabled ? 'Bật' : 'Tắt'}`);
+        };
+
+        // Debug: Log camera status
+        const checkCameraStatus = () => {
+          const video = document.querySelector('video');
+          const canvas = document.querySelector('canvas');
+          console.log('Video element:', video);
+          console.log('Canvas element:', canvas);
+          if (video) {
+            console.log('Video playing:', !video.paused);
+            console.log('Video dimensions:', video.videoWidth, 'x', video.videoHeight);
+          }
+        };
+        
+        setTimeout(checkCameraStatus, 2000);
+
+      } catch (error) {
+        console.error("Lỗi khởi tạo AR:", error);
+        updateStatus("Lỗi khởi tạo. Vui lòng tải lại trang.");
+        loadingScreen.innerHTML = `
+          <div style="text-align: center; color: white;">
+            <h2>⚠️ Có lỗi xảy ra</h2>
+            <p>Vui lòng kiểm tra kết nối mạng và tải lại trang</p>
+            <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px; background: #ff6b6b; color: white; border: none; border-radius: 5px; cursor: pointer;">Tải lại</button>
+          </div>
+        `;
+      }
+    });
+
+    // Handle visibility change for performance
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        updateStatus("Ứng dụng tạm dừng");
+      } else {
+        updateStatus("Ứng dụng hoạt động trở lại");
+      }
+    });
+  </script>
 </body>
-
 </html>
